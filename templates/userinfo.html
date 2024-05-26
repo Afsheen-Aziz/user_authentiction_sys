@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+    
+{% endfor %}
+
+{% if name %}
+    <h3>Information Added</h3>
+    <br/>
+    <table class="table table-hover table-bordered table-striped">
+{% for info in user_info %}
+<tr><td>  {{ info.id }}. {{ info.firstname}} {{ info.lastname }} - {{ info.age }}    {{ info.address }}    {{ info.phone }}    {{ info.gender }}<br/></td></tr>
+{% endfor %}
+</table>
+    <br/>
+{% else %}
+    <h1>User Information</h1>
+    <br/>
+    <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.firstname.label(class="form-label") }}
+        {{ form.firstname(class="form-control") }}
+        <br/>
+        {{ form.lastname.label(class="form-label") }}
+        {{ form.lastname(class="form-control") }}
+        <br/>
+        {{ form.age.label(class="form-label") }}
+        {{ form.age(class="form-control") }}
+        <br/>
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control") }}
+        <br/>
+        {{ form.phone.label(class="form-label") }}
+        {{ form.phone(class="form-control") }}
+        <br/>
+        {{ form.gender.label(class="form-label") }}
+        {{ form.gender(class="form-control") }}
+        <br/>
+        {{ form.submit(class="btn btn-secondary") }}
+    </form>
+</div>
+<br/>
+<table class="table table-hover table-bordered table-striped">
+{% for info in user_info %}
+    <tr><td>   {{ info.id }}. {{ info.firstname}} {{ info.lastname }} - {{ info.age }}    {{ info.address }}    {{ info.phone }}    {{ info.gender }}<br/></td></tr> 
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}
