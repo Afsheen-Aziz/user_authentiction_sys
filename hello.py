@@ -108,21 +108,6 @@ class Users(db.Model, UserMixin):
     def __repr__(self):
         return '<Name %r>' % self.name
     
-class UserInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String(100), nullable=False)
-    lastname = db.Column(db.String(100), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    address = db.Column(db.String(500), nullable=False)
-    phone = db.Column(db.String(100), nullable=False, unique=True)
-    gender = db.Column(db.String(20), nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Create a string
-    def __repr__(self):
-        return '<Name %r>' % self.name
-
-
 
 class PasswordForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired()])
@@ -181,14 +166,6 @@ def update(id):
     else:
         return render_template("update.html",form=form,name_to_update=name_to_update, id=id)
     
-class UserForm(FlaskForm):
-    firstname = StringField("First Name", validators=[DataRequired()])
-    lastname = StringField("Last Name", validators=[DataRequired()])
-    age = IntegerField("Age", validators=[DataRequired()])
-    address = StringField("Address", validators=[DataRequired()])
-    phone = StringField("Phone Number",validators=[DataRequired()])
-    gender = StringField("Gender", validators=[DataRequired()])
-    submit = SubmitField("Submit")
 
         
 def create_db():
@@ -199,13 +176,23 @@ def create_db():
 
     
 # Create a route decorator
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def index():
-    return render_template("index.html")
-
-@app.route('/user/<name>')
-def user(name):
-   return render_template("user.html",name=name)
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(username=form.username.data).first()
+        if user:
+            # Check the hash
+            if check_password_hash(user.password_hash,form.password.data):
+                login_user(user)
+                flash("Login Successful")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Wrong password- Try Again")
+        else:
+            flash("User doesn't exist")
+            
+    return render_template('login.html', form=form)
 
 #Create Custom Error Pages
 @app.errorhandler(404)
@@ -218,16 +205,6 @@ def page_not_found(e):
     return render_template("500.html"), 500
  
 # Create Form Page
-@app.route('/form', methods=['GET','POST'])
-def name():
-    name = None
-    form= NamerForm()
-    #Validate Form
-    if form.validate_on_submit():
-        name = form.name.data
-        form.name.data = ''
-        flash("Form submitted successfully!")
-    return render_template("name.html",name=name,form=form)
 
 @app.route('/user/add', methods=['GET','POST'])
 def add_user():
@@ -250,28 +227,6 @@ def add_user():
     our_users = Users.query.order_by(Users.date_added)  
             
     return render_template("add_user.html", form=form, name=name, our_users=our_users)
-
-@app.route('/user/info', methods=['GET','POST'])
-def userinfo():
-    name = None
-    form = UserForm()
-    #Validate Form
-    if form.validate_on_submit():
-        user = UserInfo.query.filter_by(phone=form.phone.data).first()
-        if user is None:
-            user = UserInfo(firstname=form.firstname.data,lastname=form.lastname.data,age=form.age.data,address=form.address.data,phone=form.phone.data,gender=form.gender.data)
-            db.session.add(user)
-            db.session.commit()
-        name = form.firstname.data
-        form.firstname.data = ''
-        form.lastname.data = ''
-        form.age.data = ''
-        form.address.data = ''
-        form.phone.data = ''
-        form.gender.data = ''
-        flash("User Information Added")
-    user_info = UserInfo.query.order_by(UserInfo.date_added)
-    return render_template("userinfo.html", form=form,name=name,user_info=user_info)
 
 
 # Create Password test Page
