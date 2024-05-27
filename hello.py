@@ -49,7 +49,7 @@ def login():
 
 # Create Login Form
 class LoginForm(FlaskForm):
-    username = StringField("Userame", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -206,7 +206,7 @@ def page_not_found(e):
  
 # Create Form Page
 
-@app.route('/user/add', methods=['GET','POST'])
+@app.route('/signup', methods=['GET','POST'])
 def add_user():
     name = None
     form = AddForm()
@@ -218,12 +218,15 @@ def add_user():
             user = Users(username=form.username.data,name=form.name.data, email=form.email.data, password_hash=hashed_pw)
             db.session.add(user)
             db.session.commit()
+            flash("User Added Successfully")
+        else:
+            flash("User Already Exists")
         name = form.name.data
         form.name.data = ''
         form.email.data = ''
         form.username.data =''
         form.password_hash.data = ''
-        flash("User Added Successfully")
+        
     our_users = Users.query.order_by(Users.date_added)  
             
     return render_template("add_user.html", form=form, name=name, our_users=our_users)

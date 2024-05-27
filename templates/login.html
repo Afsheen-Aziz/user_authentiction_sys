@@ -23,7 +23,9 @@
         {{ form.password(class="form-control") }}
         <br/>
         
-        {{ form.submit(class="btn btn-secondary") }}
+        {{ form.submit(class="btn btn-dark") }}<br/><br/>
+        <a href="{{url_for('add_user')}}" class="btn btn-secondary" class="link-secondary">Don't have an account? Sign up.</a>
+    
     </form>
 </div>
 

@@ -10,9 +10,8 @@
 {% endfor %}
 
 {% if name %}
-    <h1>Registration</h1>
+    <h1>Users</h1>
     <br/>
-    <br/><br/>
     <table class="table table-hover table-bordered table-striped">
         {% for our_user in our_users %}
         <tr>
@@ -44,11 +43,13 @@
         {{ form.submit(class="btn btn-secondary") }}
     </form>
 </div>
-<br/><br/>
+<br/>
 <table class="table table-hover table-bordered table-striped">
 {% for our_user in our_users %}
+<h1>Users</h1>
+<br/>
 <tr>
-<td>{{ our_user.id }}. <a href="{{url_for('update',id=our_user.id)}}">{{ our_user.name}}</a> - {{ our_user.username }} - {{ our_user.email }} - PW: {{our_user.password_hash }} -<a href="{{url_for('delete',id=our_user.id)}}">Delete</a></td></tr>
+<td>{{ our_user.id }}. <a href="{{url_for('update',id=our_user.id)}}">{{ our_user.name}}</a> - {{ our_user.username }} - {{ our_user.email }} - PW: {{our_user.password_hash }} -<a href="{{url_for('delete',id=our_user.id)}}">Delete Account</a></td></tr>
 {% endfor %}
 </table>
 {% endif %}
